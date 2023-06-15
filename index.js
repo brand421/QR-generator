@@ -1,10 +1,23 @@
-import inquirer from 'inquirer';
+const inquirer = require('inquirer');
 const qr = require('qr-image');
+const fs = require('fs');
 
-inquirer.prompt(["Please provide a webaddress"]).then((answers) => {
-    var qr_png=qr.image(answers, {type: 'png'});
-    qr_png.pipe(require('fs').createWriteStream(answers+".png"));
-}).catch((error) => {
+inquirer
+    .prompt([{
+        message: "Please provide a URL",
+        name: "URL",
+    }])
+    .then((answers) => {
+        console.log(answers);
+        const url = answers.URL
+        const qr_img = qr.image(url);
+        qr_img.pipe(fs.createWriteStream('url.png'));
+        fs.writeFile("url.txt", url, (err) => {
+            if (err) throw err;
+            console.log("QR code has been generated!");
+        })
+    })
+    .catch((error) => {
     if(error.isTtyError) {
         console.log("Prompt couldn't be rendered");
     } else {
